@@ -1,5 +1,5 @@
 ***********************************************************
-Timestamp: 19 11 21 Thu 10:52:35 (UTC)
+Timestamp: 19 11 22 Fri 11:07:13 (UTC)
 
 Backend results:
 0 tests completed, 0 failed, 35 skipped (compile error)
@@ -15,8 +15,8 @@ Total score (percentage):
 Backend Gradle build log:
 
 Initialized native services in: /home/travis/.gradle/native
-The client will now receive all logging from the daemon (pid: 5288). The daemon log file: /home/travis/.gradle/daemon/5.1.1/daemon-5288.out.log
-Starting 2nd build in daemon [uptime: 35.344 secs, performance: 97%]
+The client will now receive all logging from the daemon (pid: 5231). The daemon log file: /home/travis/.gradle/daemon/5.1.1/daemon-5231.out.log
+Starting 2nd build in daemon [uptime: 35.541 secs, performance: 97%]
 Using 2 worker leases.
 Starting Build
 Settings evaluated using settings file '/home/travis/build/McGill-ECSE321-Fall2019/assignment-grader/EventRegistration-Backend/settings.gradle'.
@@ -51,23 +51,25 @@ Selected primary task 'test' from project :
 Tasks to be executed: [task ':compileJava', task ':processResources', task ':classes', task ':compileTestJava', task ':processTestResources', task ':testClasses', task ':test']
 :compileJava (Thread[Daemon worker,5,main]) started.
 
-> Task :compileJava UP-TO-DATE
+> Task :compileJava
 Resolving global dependency management for project 'EventRegistration-Backend'
 Excluding [org.apache.tomcat:tomcat-annotations-api]
 Excluding []
 Skipping task ':compileJava' as it is up-to-date.
-:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.252 secs.
-:processResources (Thread[Execution worker for ':',5,main]) started.
+
+> Task :compileJava UP-TO-DATE
+:compileJava (Thread[Daemon worker,5,main]) completed. Took 2.056 secs.
+:processResources (Thread[Daemon worker,5,main]) started.
 
 > Task :processResources UP-TO-DATE
 Skipping task ':processResources' as it is up-to-date.
-:processResources (Thread[Execution worker for ':',5,main]) completed. Took 0.003 secs.
-:classes (Thread[Execution worker for ':',5,main]) started.
+:processResources (Thread[Daemon worker,5,main]) completed. Took 0.019 secs.
+:classes (Thread[Daemon worker,5,main]) started.
 
 > Task :classes UP-TO-DATE
 Skipping task ':classes' as it has no actions.
-:classes (Thread[Execution worker for ':',5,main]) completed. Took 0.0 secs.
-:compileTestJava (Thread[Execution worker for ':',5,main]) started.
+:classes (Thread[Daemon worker,5,main]) completed. Took 0.0 secs.
+:compileTestJava (Thread[Daemon worker,5,main]) started.
 
 > Task :compileTestJava
 Excluding []
@@ -581,7 +583,7 @@ import ca.mcgill.ecse321.eventregistration.model.Bitcoin;
 100 errors
 
 > Task :compileTestJava FAILED
-:compileTestJava (Thread[Execution worker for ':',5,main]) completed. Took 3.358 secs.
+:compileTestJava (Thread[Daemon worker,5,main]) completed. Took 3.602 secs.
 
 FAILURE: Build failed with an exception.
 
@@ -594,5 +596,5 @@ Run with --stacktrace option to get the stack trace. Run with --debug option to 
 
 * Get more help at https://help.gradle.org
 
-BUILD FAILED in 5s
+BUILD FAILED in 6s
 3 actionable tasks: 1 executed, 2 up-to-date
