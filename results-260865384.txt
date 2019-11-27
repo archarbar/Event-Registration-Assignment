@@ -1,5 +1,5 @@
 ***********************************************************
-Timestamp: 19 11 26 Tue 11:03:49 (UTC)
+Timestamp: 19 11 27 Wed 11:10:54 (UTC)
 
 Backend results:
 0 tests completed, 0 failed, 35 skipped (compile error)
@@ -15,8 +15,8 @@ Total score (percentage):
 Backend Gradle build log:
 
 Initialized native services in: /home/travis/.gradle/native
-The client will now receive all logging from the daemon (pid: 5265). The daemon log file: /home/travis/.gradle/daemon/5.1.1/daemon-5265.out.log
-Starting 2nd build in daemon [uptime: 33.261 secs, performance: 97%]
+The client will now receive all logging from the daemon (pid: 5433). The daemon log file: /home/travis/.gradle/daemon/5.1.1/daemon-5433.out.log
+Starting 2nd build in daemon [uptime: 35.682 secs, performance: 98%]
 Using 2 worker leases.
 Starting Build
 Settings evaluated using settings file '/home/travis/build/McGill-ECSE321-Fall2019/assignment-grader/EventRegistration-Backend/settings.gradle'.
@@ -56,12 +56,12 @@ Resolving global dependency management for project 'EventRegistration-Backend'
 Excluding [org.apache.tomcat:tomcat-annotations-api]
 Excluding []
 Skipping task ':compileJava' as it is up-to-date.
-:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.527 secs.
+:compileJava (Thread[Daemon worker,5,main]) completed. Took 1.606 secs.
 :processResources (Thread[Execution worker for ':',5,main]) started.
 
 > Task :processResources UP-TO-DATE
 Skipping task ':processResources' as it is up-to-date.
-:processResources (Thread[Execution worker for ':',5,main]) completed. Took 0.003 secs.
+:processResources (Thread[Execution worker for ':',5,main]) completed. Took 0.009 secs.
 :classes (Thread[Execution worker for ':',5,main]) started.
 
 > Task :classes UP-TO-DATE
@@ -581,7 +581,7 @@ import ca.mcgill.ecse321.eventregistration.model.Bitcoin;
 100 errors
 
 > Task :compileTestJava FAILED
-:compileTestJava (Thread[Execution worker for ':',5,main]) completed. Took 3.456 secs.
+:compileTestJava (Thread[Execution worker for ':',5,main]) completed. Took 3.502 secs.
 
 FAILURE: Build failed with an exception.
 
