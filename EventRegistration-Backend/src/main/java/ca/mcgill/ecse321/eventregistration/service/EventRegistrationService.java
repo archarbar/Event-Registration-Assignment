@@ -23,6 +23,9 @@ public class EventRegistrationService {
 	private PersonRepository personRepository;
 	@Autowired
 	private RegistrationRepository registrationRepository;
+	@Autowired
+	private CinemaRepository cinemaRepository;
+	
 
 	@Transactional
 	public Person createPerson(String name) {
@@ -35,6 +38,21 @@ public class EventRegistrationService {
 		person.setName(name);
 		personRepository.save(person);
 		return person;
+	}
+	
+	@Transactional
+	public Cinema createCinema(String name, Date date, Time startTime , Time endTime, String movie) {
+		if (movie == null || movie.trim().length() == 0) {
+			throw new IllegalArgumentException("Cinema movie cannot be empty!");
+		}
+		else if (cinemaRepository.existsById(name)) {
+			throw new IllegalArgumentException("Cinema has already been created!");
+		}
+		Cinema cinema = new Cinema();
+		buildEvent(cinema, name, date, startTime, endTime);
+		cinema.setMovie(movie);
+		cinemaRepository.save(cinema);
+		return cinema;
 	}
 
 
@@ -50,6 +68,11 @@ public class EventRegistrationService {
 	@Transactional
 	public List<Person> getAllPersons() {
 		return toList(personRepository.findAll());
+	}
+	
+	@Transactional
+	public List<Cinema> getAllCinemas() {
+		return toList(cinemaRepository.findAll());
 	}
 
 	@Transactional
