@@ -25,6 +25,8 @@ public class EventRegistrationService {
 	private RegistrationRepository registrationRepository;
 	@Autowired
 	private CinemaRepository cinemaRepository;
+	@Autowired
+	private VolunteerRepository volunteerRepository;
 	
 
 	@Transactional
@@ -38,6 +40,19 @@ public class EventRegistrationService {
 		person.setName(name);
 		personRepository.save(person);
 		return person;
+	}
+	
+	@Transactional
+	public Volunteer createVolunteer(String name) {
+		if (name == null || name.trim().length() == 0) {
+			throw new IllegalArgumentException("Volunteer name cannot be empty!");
+		} else if (volunteerRepository.existsById(name)) {
+			throw new IllegalArgumentException("Volunteer has already been created!");
+		}
+		Volunteer volunteer = new Volunteer();
+		volunteer.setName(name);
+		volunteerRepository.save(volunteer);
+		return volunteer;
 	}
 	
 	@Transactional
@@ -64,10 +79,24 @@ public class EventRegistrationService {
 		Person person = personRepository.findByName(name);
 		return person;
 	}
+	
+	@Transactional
+	public Volunteer getVolunteer(String name) {
+		if (name == null || name.trim().length() == 0) {
+			throw new IllegalArgumentException("Volunteer name cannot be empty!");
+		}
+		Volunteer volunteer = volunteerRepository.findByName(name);
+		return volunteer;
+	}
 
 	@Transactional
 	public List<Person> getAllPersons() {
 		return toList(personRepository.findAll());
+	}
+	
+	@Transactional
+	public List<Volunteer> getAllVolunteers() {
+		return toList(volunteerRepository.findAll());
 	}
 	
 	@Transactional
