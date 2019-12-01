@@ -57,14 +57,14 @@ public class EventRegistrationService {
 	
 	@Transactional
 	public Cinema createCinema(String name, Date date, Time startTime , Time endTime, String movie) {
+		Cinema cinema = new Cinema();
+		buildEvent(cinema, name, date, startTime, endTime);
 		if (movie == null || movie.trim().length() == 0) {
 			throw new IllegalArgumentException("Cinema movie cannot be empty!");
 		}
 		else if (cinemaRepository.existsById(name)) {
 			throw new IllegalArgumentException("Cinema has already been created!");
 		}
-		Cinema cinema = new Cinema();
-		buildEvent(cinema, name, date, startTime, endTime);
 		cinema.setMovie(movie);
 		cinemaRepository.save(cinema);
 		return cinema;
@@ -82,10 +82,7 @@ public class EventRegistrationService {
 	
 	@Transactional
 	public Volunteer getVolunteer(String name) {
-		if (name == null || name.trim().length() == 0) {
-			throw new IllegalArgumentException("Volunteer name cannot be empty!");
-		}
-		Volunteer volunteer = volunteerRepository.findByName(name);
+		Volunteer volunteer = (Volunteer) getPerson(name);
 		return volunteer;
 	}
 
