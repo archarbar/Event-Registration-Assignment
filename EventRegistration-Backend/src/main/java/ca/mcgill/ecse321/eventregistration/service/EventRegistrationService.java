@@ -226,6 +226,24 @@ public class EventRegistrationService {
 		}
 		return eventsAttendedByPerson;
 	}
+	
+	@Transactional
+	public void volunteersEvent(Volunteer volunteer, Event event) {
+		if (volunteer == null) {
+			throw new IllegalArgumentException("Volunteer needs to be selected for volunteers!");
+		}
+		if (event == null) {
+			throw new IllegalArgumentException("Event needs to be selected for volunteers!");
+		}
+		for (Event existingEvent: getAllEvents()) {
+			if (existingEvent == event) {
+				Set<Volunteer> volunteers = event.getVolunteers();
+				volunteers.add(volunteer);
+				event.setVolunteers(volunteers);
+			}
+		}
+		
+	}
 
 	private <T> List<T> toList(Iterable<T> iterable) {
 		List<T> resultList = new ArrayList<T>();

@@ -52,6 +52,24 @@ public class Event {
         return this.endTime;
     }
     
-    @ManyToMany(mappedBy = "events")
     private Set<Person> participants;
+    
+    @ManyToMany(mappedBy = "events")
+    public Set<Person> getParticipants() {
+        return this.participants;
+      }
+    
+    public void setParticipants(Set<Person> participants) {
+        this.participants = participants;
+      }
+    
+    private Set<Volunteer> volunteers;
+    
+    @ManyToMany(mappedBy = "events")
+    public Set<Volunteer> getVolunteers() {
+      return this.volunteers;
+    }
+    public void setVolunteers(Set<Volunteer> volunteers) {
+        this.volunteers = volunteers;
+      }
 }
