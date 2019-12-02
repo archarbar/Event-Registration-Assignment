@@ -1,11 +1,34 @@
 package ca.mcgill.ecse321.eventregistration.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
+import ca.mcgill.ecse321.eventregistration.model.Person;
+
+@Entity
 public class Bitcoin {
 	
-//	private int bitcoin;
-//	
-//	@ManyToOne(optional = true)
-//	public Bitcoin getBitcoin() {
-//		return this.bitcoin;
-//	}
+	private int amount;
+	
+	@Id
+	public int getAmount() {
+		return this.amount;
+	}
+	
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+	
+	private String userID;
+	
+	public String getUserID() {
+		return this.userID;
+	}
+	
+	public void setUserID(String userID) {
+		this.userID = userID;
+	}
+
 }

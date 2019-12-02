@@ -28,6 +28,8 @@ public class EventRegistrationService {
 	private CinemaRepository cinemaRepository;
 	@Autowired
 	private VolunteerRepository volunteerRepository;
+	@Autowired
+	private BitcoinRepository bitcoinRepository;
 	
 
 	@Transactional
@@ -60,11 +62,11 @@ public class EventRegistrationService {
 	public Cinema createCinema(String name, Date date, Time startTime , Time endTime, String movie) {
 		Cinema cinema = new Cinema();
 		buildEvent(cinema, name, date, startTime, endTime);
+		if (cinemaRepository.existsById(name)) {
+			throw new IllegalArgumentException("Cinema has already been created!");
+		}
 		if (movie == null || movie.trim().length() == 0) {
 			throw new IllegalArgumentException("Cinema movie cannot be empty!");
-		}
-		else if (cinemaRepository.existsById(name)) {
-			throw new IllegalArgumentException("Cinema has already been created!");
 		}
 		cinema.setMovie(movie);
 		cinemaRepository.save(cinema);
@@ -106,6 +108,9 @@ public class EventRegistrationService {
 	public Event buildEvent(Event event, String name, Date date, Time startTime, Time endTime) {
 		// Input validation
 		String error = "";
+		if (event == null) {
+			error = error + "Event cannot be empty! ";
+		}
 		if (name == null || name.trim().length() == 0) {
 			error = error + "Event name cannot be empty! ";
 		} else if (eventRepository.existsById(name)) {
@@ -205,7 +210,7 @@ public class EventRegistrationService {
 	}
 	@Transactional
 	public List<Registration> getRegistrationsForPerson(Person person){
-		if(person == null) {
+		if (person == null) {
 			throw new IllegalArgumentException("Person cannot be null!");
 		}
 		return registrationRepository.findByPerson(person);
@@ -232,11 +237,12 @@ public class EventRegistrationService {
 	public void volunteersEvent(Volunteer volunteer, Event event) {
 		if (volunteer == null) {
 			throw new IllegalArgumentException("Volunteer needs to be selected for volunteers!");
+		} else if (!volunteerRepository.existsById(volunteer.getName())) {
+			throw new IllegalArgumentException("Volunteer does not exist!");
 		}
 		if (event == null) {
 			throw new IllegalArgumentException("Event needs to be selected for volunteers!");
-		}
-		if (event.getName() == null || event.getDate() == null || event.getStartTime() == null || event.getEndTime() == null) {
+		} else if (!eventRepository.existsById(event.getName())) {
 			throw new IllegalArgumentException("Event does not exist!");
 		}
 		eventRepository.save(event);
@@ -251,9 +257,29 @@ public class EventRegistrationService {
 			events.add(event);
 		}
 		volunteer.setVolunteers(events);
-		
 	}
-
+	
+	public Bitcoin createBitcoinPay(String userID, int amount) {
+		String regex = "[a-zA-Z]{4}-[0-9]{4}"; // match a string of 4 letters followed by a - and 4 numbers
+		if (userID == null || !userID.matches(regex)) {
+			throw new IllegalArgumentException("User id is null or has wrong format!");
+		}
+		if (amount < 0) {
+			throw new IllegalArgumentException("Payment amount cannot be negative!");
+		}
+		Bitcoin bitcoin = new Bitcoin();
+		bitcoin.setUserID(userID);
+		bitcoinRepository.save(bitcoin);
+		return bitcoin;
+	}
+	
+	public void pay(Registration registration, Bitcoin bitcoin) {
+		if (registration == null || bitcoin == null) {
+			throw new IllegalArgumentException("Registration and payment cannot be null!");
+		}
+		registration.setBitcoin(bitcoin);
+	}
+	
 	private <T> List<T> toList(Iterable<T> iterable) {
 		List<T> resultList = new ArrayList<T>();
 		for (T t : iterable) {
