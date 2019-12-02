@@ -43,7 +43,7 @@ public class Registration {
 	
 	private Bitcoin bitcoin;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = true)
 	public Bitcoin getBitcoin() {
 		return this.bitcoin;
 	}

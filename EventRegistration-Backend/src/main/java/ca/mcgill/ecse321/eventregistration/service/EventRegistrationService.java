@@ -269,6 +269,7 @@ public class EventRegistrationService {
 		}
 		Bitcoin bitcoin = new Bitcoin();
 		bitcoin.setUserID(userID);
+		bitcoin.setAmount(amount);
 		bitcoinRepository.save(bitcoin);
 		return bitcoin;
 	}
@@ -278,6 +279,7 @@ public class EventRegistrationService {
 			throw new IllegalArgumentException("Registration and payment cannot be null!");
 		}
 		registration.setBitcoin(bitcoin);
+		registrationRepository.save(registration);
 	}
 	
 	private <T> List<T> toList(Iterable<T> iterable) {
