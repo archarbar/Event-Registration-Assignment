@@ -9,11 +9,15 @@ import javax.persistence.ManyToMany;
 @Entity
 public class Volunteer extends Person{
     
-    @ManyToMany
     private Set<Event> events;
     
+    @ManyToMany
     public Set<Event> getVolunteers() {
     	return this.events;
+    }
+    
+    public void setVolunteers(Set<Event> events) {
+    	this.events = events;
     }
     
 }

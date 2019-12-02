@@ -6,12 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import java.sql.Date;
 import java.sql.Time;
-import java.util.Set;
 
 @Entity
 @Table(name="event")
@@ -52,24 +50,4 @@ public class Event {
         return this.endTime;
     }
     
-    private Set<Person> participants;
-    
-    @ManyToMany(mappedBy = "events")
-    public Set<Person> getParticipants() {
-        return this.participants;
-      }
-    
-    public void setParticipants(Set<Person> participants) {
-        this.participants = participants;
-      }
-    
-    private Set<Volunteer> volunteers;
-    
-    @ManyToMany(mappedBy = "events")
-    public Set<Volunteer> getVolunteers() {
-      return this.volunteers;
-    }
-    public void setVolunteers(Set<Volunteer> volunteers) {
-        this.volunteers = volunteers;
-      }
 }

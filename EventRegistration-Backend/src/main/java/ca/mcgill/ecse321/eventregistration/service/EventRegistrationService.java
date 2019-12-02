@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.eventregistration.service;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -235,13 +236,21 @@ public class EventRegistrationService {
 		if (event == null) {
 			throw new IllegalArgumentException("Event needs to be selected for volunteers!");
 		}
-		for (Event existingEvent: getAllEvents()) {
-			if (existingEvent == event) {
-				Set<Volunteer> volunteers = event.getVolunteers();
-				volunteers.add(volunteer);
-				event.setVolunteers(volunteers);
-			}
+		if (event.getName() == null || event.getDate() == null || event.getStartTime() == null || event.getEndTime() == null) {
+			throw new IllegalArgumentException("Event does not exist!");
 		}
+		eventRepository.save(event);
+		Set<Event> events = null;
+		if (volunteer.getVolunteers() != null) {
+			events = volunteer.getVolunteers();
+			events.add(event);
+			volunteer.setVolunteers(events);
+		}
+		else {
+			events = new HashSet<Event>();
+			events.add(event);
+		}
+		volunteer.setVolunteers(events);
 		
 	}
 

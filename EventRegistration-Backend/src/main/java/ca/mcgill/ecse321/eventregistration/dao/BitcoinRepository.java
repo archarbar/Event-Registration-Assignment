@@ -6,4 +6,10 @@ import ca.mcgill.ecse321.eventregistration.model.Cinema;
 
 public interface BitcoinRepository extends CrudRepository<Cinema, String> {
 
+//	int bitcoin;
+//	
+//	@ManyToOne(optional = true)
+//	public Bitcoin getBitcoin() {
+//		return this.bitcoin;
+//	}
 }
