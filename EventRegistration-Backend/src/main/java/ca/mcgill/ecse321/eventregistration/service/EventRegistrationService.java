@@ -234,6 +234,18 @@ public class EventRegistrationService {
 	}
 	
 	@Transactional
+	public List<Event> getEventsVolunteeredByVolunteer(Volunteer volunteer) {
+		if (volunteer == null) {
+			throw new IllegalArgumentException("Volunteer cannot be null!");
+		}
+		List<Event> eventsVolunteeredByVolunteer = new ArrayList<>();
+		for (Event e : volunteer.getVolunteers()) {
+			eventsVolunteeredByVolunteer.add(e);
+		}
+		return eventsVolunteeredByVolunteer;
+	}
+	
+	@Transactional
 	public void volunteersEvent(Volunteer volunteer, Event event) {
 		if (volunteer == null) {
 			throw new IllegalArgumentException("Volunteer needs to be selected for volunteers!");

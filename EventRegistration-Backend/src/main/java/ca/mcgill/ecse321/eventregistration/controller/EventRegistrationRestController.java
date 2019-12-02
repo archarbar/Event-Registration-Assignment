@@ -38,6 +38,15 @@ public class EventRegistrationRestController {
 		Person person = service.createPerson(name);
 		return convertToDto(person);
 	}
+	
+	// Example REST call:
+	// http://localhost:8088/volunteers/John
+	@PostMapping(value = { "/volunteers/{name}", "/volunteers/{name}/" })
+	public VolunteerDto createVolunteer(@PathVariable("name") String name) throws IllegalArgumentException {
+		// @formatter:on
+		Volunteer volunteer = service.createVolunteer(name);
+		return convertToDto(volunteer);
+	}
 
 	// @formatter:off
 	// Example REST call:
@@ -50,6 +59,20 @@ public class EventRegistrationRestController {
 		// @formatter:on
 		Event event = service.createEvent(name, date, Time.valueOf(startTime), Time.valueOf(endTime));
 		return convertToDto(event);
+	}
+	
+	// @formatter:off
+	// Example REST call:
+	// http://localhost:8080/Cinemas/testcinema?date=2013-10-23&startTime=00:00&endTime=23:59&movie=joker
+	@PostMapping(value = { "/Cinemas/{name}", "/Cinemas/{name}/" })
+	public CinemaDto createCinema(@PathVariable("name") String name, @RequestParam Date date,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME, pattern = "HH:mm") LocalTime startTime,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME, pattern = "HH:mm") LocalTime endTime, 
+			@RequestParam																												("movie") String movie)
+			throws IllegalArgumentException {
+		// @formatter:on
+		Cinema Cinema = service.createCinema(name, date, Time.valueOf(startTime), Time.valueOf(endTime), movie);
+		return convertToDto(Cinema);
 	}
 
 	// @formatter:off
@@ -64,6 +87,34 @@ public class EventRegistrationRestController {
 
 		Registration r = service.register(p, e);
 		return convertToDto(r, p, e);
+	}
+	
+	// @formatter:off
+	@PostMapping(value = { "/assign", "/assign/" })
+	public void assignVolunteerForEvent(@RequestParam(name = "volunteer") VolunteerDto vDto,
+			@RequestParam(name = "event") EventDto eDto) throws IllegalArgumentException {
+		// @formatter:on
+
+		// Both the volunteer and the event are identified by their names
+		Volunteer v = service.getVolunteer(vDto.getName());
+		Event e = service.getEvent(eDto.getName());
+
+		service.volunteersEvent(v, e);
+	}
+	
+	// @formatter:off
+	@PostMapping(value = { "/pay", "/pay/" })
+	public void payForRegistration(@RequestParam(name = "person") PersonDto pDto,
+			@RequestParam(name = "event") EventDto eDto,
+			@RequestParam(name = "userID") String userID,
+			@RequestParam(name = "amount") int amount) throws IllegalArgumentException {
+		// @formatter:on
+		
+		Person p = service.getPerson(pDto.getName());
+		Event e = service.getEvent(eDto.getName());
+		Registration registration = service.getRegistrationByPersonAndEvent(p, e);
+		Bitcoin bitcoin = service.createBitcoinPay(userID, amount);
+		service.pay(registration, bitcoin);
 	}
 
 	// GET Mappings
@@ -142,6 +193,31 @@ public class EventRegistrationRestController {
 		personDto.setEventsAttended(createAttendedEventDtosForPerson(p));
 		return personDto;
 	}
+	
+	private BitcoinDto convertToDto(Bitcoin b) {
+		if (b == null) {
+			throw new IllegalArgumentException("There is no such Bitcoin!");
+		}
+		BitcoinDto bitcoinDto = new BitcoinDto(b.getAmount(), b.getUserID());
+		return bitcoinDto;
+	}
+	
+	private CinemaDto convertToDto(Cinema c) {
+		if (c == null) {
+			throw new IllegalArgumentException("There is no such Cinema!");
+		}
+		CinemaDto cinemaDto = new CinemaDto(c.getMovie());
+		return cinemaDto;
+	}
+	
+	private VolunteerDto convertToDto(Volunteer v) {
+		if (v == null) {
+			throw new IllegalArgumentException("There is no such Volunteer!");
+		}
+		VolunteerDto volunteerDto = new VolunteerDto();
+		volunteerDto.setVolunteers(createVounteeredEventDtosForVolunteer(v));
+		return volunteerDto;
+	}
 
 	// DTOs for registrations
 	private RegistrationDto convertToDto(Registration r, Person p, Event e) {
@@ -181,6 +257,15 @@ public class EventRegistrationRestController {
 		List<Event> eventsForPerson = service.getEventsAttendedByPerson(p);
 		List<EventDto> events = new ArrayList<>();
 		for (Event event : eventsForPerson) {
+			events.add(convertToDto(event));
+		}
+		return events;
+	}
+	
+	private List<EventDto> createVounteeredEventDtosForVolunteer(Volunteer v) {
+		List<Event> eventsForVolunteer = service.getEventsVolunteeredByVolunteer(v);
+		List<EventDto> events = new ArrayList<>();
+		for (Event event : eventsForVolunteer) {
 			events.add(convertToDto(event));
 		}
 		return events;
