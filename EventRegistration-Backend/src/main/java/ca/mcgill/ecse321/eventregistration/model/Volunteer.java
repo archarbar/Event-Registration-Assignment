@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.eventregistration.model;
 
-
 import java.util.Set;
 
 import javax.persistence.Entity;

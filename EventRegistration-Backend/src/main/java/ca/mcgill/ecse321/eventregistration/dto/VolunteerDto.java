@@ -1,10 +1,6 @@
 package ca.mcgill.ecse321.eventregistration.dto;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-
-import ca.mcgill.ecse321.eventregistration.model.Event;
 
 public class VolunteerDto{
     
@@ -14,13 +10,9 @@ public class VolunteerDto{
     
     public VolunteerDto() {
     }
-
-	@SuppressWarnings("unchecked")
-	public VolunteerDto(String name) {
-		this(name, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
-	}
 	
     public VolunteerDto(String name, List<EventDto> eventsAttended, List<EventDto> eventsVolunteered) {
+    	this.name = name;
     	this.eventsAttended = eventsAttended;
     	this.eventsVolunteered = eventsVolunteered;
     }

@@ -4,6 +4,7 @@ public class RegistrationDto {
 
 	private PersonDto person;
 	private EventDto event;
+	private BitcoinDto bitcoin;
 
 	public RegistrationDto() {
 	}
@@ -11,6 +12,7 @@ public class RegistrationDto {
 	public RegistrationDto(PersonDto person, EventDto event) {
 		this.person = person;
 		this.event = event;
+		this.bitcoin = null;
 	}
 
 	public EventDto getEvent() {
@@ -27,6 +29,14 @@ public class RegistrationDto {
 
 	public void setPerson(PersonDto person) {
 		this.person = person;
+	}
+	
+	public BitcoinDto getBitcoin() {
+		return bitcoin;
+	}
+
+	public void setBitcoin(BitcoinDto bitcoin) {
+		this.bitcoin = bitcoin;
 	}
 
 }

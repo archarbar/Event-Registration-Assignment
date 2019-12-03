@@ -27,6 +27,8 @@ export default {
       volunteers: [],
       events: [],
       cinemas: [],
+      registrations: [],
+      bitcoins: [],
       newPerson: '',
       personType: '',
       newEvent: {
@@ -57,16 +59,7 @@ export default {
     })
     .catch(e => {this.errorPerson = e});
 
-    AXIOS.get('/volunteers')
-    .then(response => {
-      this.volunteers = response.data;
-      this.volunteers.forEach(volunteer => this.getRegistrations(volunteer.name))
-    })
-    .catch(e => {this.errorPerson = e});
-
     AXIOS.get('/events').then(response => {this.events = response.data}).catch(e => {this.errorEvent = e});
-
-    AXIOS.get('/cinemas').then(response => {this.cinemas = response.data}).catch(e => {this.errorCinema = e});
 
   },
 
@@ -86,7 +79,7 @@ export default {
          console.log(e);
         });
       }
-      else if (personType === "Volunteer") {
+      else if (personType === "Volunteer"){
         AXIOS.post('/volunteers/'.concat(personName), {}, {})
         .then(response => {
           this.volunteers.push(response.data);
@@ -103,7 +96,6 @@ export default {
     },
 
     createEvent: function (newEvent) {
-      let url = '';
       if (newEvent.movie === undefined || newEvent.movie === null || newEvent.movie.trim().length === 0) {
        AXIOS.post('/events/'.concat(newEvent.name), {}, {params: newEvent})
        .then(response => {
@@ -143,7 +135,8 @@ export default {
 
       AXIOS.post('/register', {}, {params: params})
       .then(response => {
-        person.eventsAttended.push(event)
+        this.registrations.push(response.data);
+        person.eventsAttended.push(event);
         this.selectedPerson = '';
         this.selectedEvent = '';
         this.errorRegistration = '';
@@ -165,7 +158,7 @@ export default {
 
       AXIOS.post('/assign', {}, {params: params})
       .then(response => {
-        volunteer.eventsVolunteered.push(event)
+        volunteer.eventsVolunteered.push(response.data);
         this.selectedVolunteer = '';
         this.selectedEvent = '';
         this.errorAssignment = '';
@@ -180,21 +173,19 @@ export default {
     makePayment: function (personName, eventName, userID, amount) {
       let event = this.events.find(x => x.name === eventName);
       let person = this.persons.find(x => x.name === personName);
+      let registration = this.registrations.find(x => (x.person === person) || (x.event === event));
       let params = {
         person: person.name,
         event: event.name,
+        registration,
         userID,
         amount
       };
 
       AXIOS.post('/bitcoins', {}, {params: params})
       .then(response => {
-        // getRegistrations(person).forEach(registration => {
-        //   if (registration.getEvent() === event) {
-        //     registration.getBitcoin().setUserID(userID);
-        //     registration.getBitcoin().setAmount(amount);
-        //   }
-        // });
+        this.bitcoins.push(response.data);
+        this.registration.bitcoin = response.data;
         this.selectedPerson = '';
         this.selectedEvent = '';
         this.userID = '';
@@ -218,6 +209,37 @@ export default {
         response.data.forEach(event => {
           this.persons[indexPart].eventsAttended.push(event);
         });
+      })
+      .catch(e => {
+        e = e.response.data.message ? e.response.data.message : e;
+        console.log(e);
+      });
+    },
+
+    getVolunteeredEvents: function (volunteerName) {
+      AXIOS.get('/events/volunteer/'.concat(volunteerName))
+      .then(response => {
+        if (!response.data || response.data.length <= 0) return;
+
+        let indexPart = this.volunteers.map(x => x.name).indexOf(volunteerName);
+        this.volunteers[indexPart].eventsVolunteered = [];
+        response.data.forEach(event => {
+          this.volunteers[indexPart].eventsVolunteered.push(event);
+        });
+      })
+      .catch(e => {
+        e = e.response.data.message ? e.response.data.message : e;
+        console.log(e);
+      });
+    },
+
+    getBitcoin: function (registrationId) {
+      AXIOS.get('/registrations'.concat(registrationId).concat('bitcoin'))
+      .then(response => {
+        if (!response.data || response.data.length <= 0) return;
+
+        let indexPart = this.registrations.map(x => x.id).indexOf(registrationId);
+        this.registrations[indexPart].bitcoin = response.data;
       })
       .catch(e => {
         e = e.response.data.message ? e.response.data.message : e;

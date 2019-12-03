@@ -17,8 +17,10 @@
             </li>
           </ul>
         </td>
-        <!-- <td v-bind:id="`${event.name.replace(/\s/g, '_')}-name`">{{event.name}}</td>
-        <td v-bind:id="`${event.name.replace(/\s/g, '_')}-date`">{{event.date}}</td> -->
+              <!-- <span v-for="(bitcoin, i) in bitcoins" v-bind:id="bitcoin.amount" v-bind:key="`bitcoin-${i}`"> -->
+        <td v-bind:id="`${bitcoin.userID.replace(/\s/g, '_')}-userID`">{{bitcoin.userID}}</td>
+        <td v-bind:id="`${bitcoin.amount}-amount`">{{bitcoin.amount}}</td>
+              <!-- </span> -->
       <tr>
         <td>
           <input id="create_person_person_name" type="text" v-model="newPerson" placeholder="Person Name">
@@ -31,7 +33,7 @@
           </select>
         </td>
         <td>
-          <button id="create_person_button" v-bind:disabled="!newPerson" @click="createPerson(personType, newPerson)">Create Person</button>
+          <button id="create_person_button" v-bind:disabled="!newPerson && !personType" @click="createPerson(personType, newPerson)">Create Person</button>
         </td>
         <td></td>
         <td></td>

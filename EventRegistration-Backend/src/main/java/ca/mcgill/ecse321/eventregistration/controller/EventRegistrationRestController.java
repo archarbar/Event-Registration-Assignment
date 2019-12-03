@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -197,6 +198,16 @@ public class EventRegistrationRestController {
 
 		return createRegistrationDtosForPerson(p);
 	}
+	
+	@GetMapping(value = { "/registrations/{id}/bitcoin", "/registrations/{id}/bitcoin/" })
+	public BitcoinDto getBitcoinForRegistration(@PathVariable("id") RegistrationDto rDto)
+			throws IllegalArgumentException {
+		// Both the person and the event are identified by their names
+		Registration r = service.getRegistrationByPersonAndEvent(service.getPerson(rDto.getPerson().getName()), 
+				service.getEvent(rDto.getEvent().getName()));
+		Bitcoin bitcoin = r.getBitcoin();
+		return convertToDto(bitcoin);
+	}
 
 	@GetMapping(value = { "/persons", "/persons/" })
 	public List<PersonDto> getAllPersons() {
@@ -265,8 +276,8 @@ public class EventRegistrationRestController {
 		if (v == null) {
 			throw new IllegalArgumentException("There is no such Volunteer!");
 		}
-		VolunteerDto volunteerDto = new VolunteerDto(v.getName());
-		volunteerDto.setVolunteers(createVounteeredEventDtosForVolunteer(v));
+		@SuppressWarnings("unchecked")
+		VolunteerDto volunteerDto = new VolunteerDto(v.getName(), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
 		return volunteerDto;
 	}
 
