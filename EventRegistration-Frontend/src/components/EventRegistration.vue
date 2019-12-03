@@ -1,7 +1,7 @@
 <template>
   <div id="eventregistration">
     <h2>Persons</h2>
-    <table id="persons_table">
+    <table id="persons-table">
       <tr>
         <th>Name</th>
         <th>Events</th>
@@ -17,13 +17,16 @@
             </li>
           </ul>
         </td>
-              <!-- <span v-for="(bitcoin, i) in bitcoins" v-bind:id="bitcoin.amount" v-bind:key="`bitcoin-${i}`"> -->
-        <td v-bind:id="`${bitcoin.userID.replace(/\s/g, '_')}-userID`">{{bitcoin.userID}}</td>
-        <td v-bind:id="`${bitcoin.amount}-amount`">{{bitcoin.amount}}</td>
-              <!-- </span> -->
+        <td>
+          
+        </td>          
+        
+        
+        <!-- <td v-bind:id="`${bitcoin.userID.replace(/\s/g, '_')}-userID`">{{bitcoin.userID}}</td>
+        <td v-bind:id="`${bitcoin.amount}-amount`">{{bitcoin.amount}}</td> -->
       <tr>
         <td>
-          <input id="create_person_person_name" type="text" v-model="newPerson" placeholder="Person Name">
+          <input id="create-person-person-name" type="text" v-model="newPerson" placeholder="Person Name">
         </td>
         <td>
           <select id='create-person-person-type' v-model="personType">
@@ -33,7 +36,7 @@
           </select>
         </td>
         <td>
-          <button id="create_person_button" v-bind:disabled="!newPerson && !personType" @click="createPerson(personType, newPerson)">Create Person</button>
+          <button id="create-person-button" v-bind:disabled="!newPerson && !personType" @click="createPerson(personType, newPerson)">Create Person</button>
         </td>
         <td></td>
         <td></td>
@@ -117,7 +120,7 @@
     <span v-if="errorRegistration" style="color:red">Error: {{errorRegistration}}</span>
     <hr>
     <!-- PAY FOR REGISTRATION  -->
-        <h2>Pay for Registration with Bitcoin</h2>
+    <h2>Pay for Registration with Bitcoin</h2>
     <label>Person:
       <select id='bitcoin-person-select' v-model="selectedPerson">
         <option disabled value="">Please select one</option>
@@ -140,7 +143,7 @@
     <br>
     <button id='bitcoin-button' v-bind:disabled="!selectedPerson || !selectedEvent" @click="makePayment(selectedPerson, selectedEvent, userID, amount)">Make payment</button>
     <br/>
-    <span v-if="errorRegistration" style="color:red">Error: {{errorRegistration}}</span>
+    <span id="bitcoin-error" v-if="errorBitcoin" style="color:red">Error: {{errorBitcoin}}</span>
     <hr>
 
   </div>

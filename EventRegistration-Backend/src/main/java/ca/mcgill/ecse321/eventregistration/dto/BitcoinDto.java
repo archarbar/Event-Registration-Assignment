@@ -8,10 +8,6 @@ public class BitcoinDto {
 
 	public BitcoinDto() {
 	}
-
-	public BitcoinDto(int amount) {
-		this(amount, "QWER-1234");
-	}
 	
 	public BitcoinDto(int amount, String userID) {
 		this.amount = amount;

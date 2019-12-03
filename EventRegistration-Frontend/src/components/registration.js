@@ -43,10 +43,9 @@ export default {
       userID: '',
       amount: 0,
       errorPerson: '',
-      errorVolunteer: '',
       errorEvent: '',
-      errorCinema: '',
       errorRegistration: '',
+      errorBitcoin: '',
       response: [],
     }
   },
@@ -84,12 +83,12 @@ export default {
         .then(response => {
           this.volunteers.push(response.data);
           this.persons.push(response.data);
-          this.errorVolunteer = '';
+          this.errorPerson = '';
           this.newPerson = '';
        })
        .catch(e => {
           e = e.response.data.message ? e.response.data.message : e;
-          this.errorVolunteer = e;
+          this.errorPerson = e;
          console.log(e);
         });
       }
@@ -114,12 +113,12 @@ export default {
         .then(response => {
           this.cinemas.push(response.data);
           this.events.push(response.data);
-          this.errorCinema = '';
+          this.errorEvent = '';
           this.newEvent.name = this.newEvent.make = this.newEvent.movie = this.newEvent.company = this.newEvent.artist = this.newEvent.title = '';
         })
         .catch(e => {
           e = e.response.data.message ? e.response.data.message : e;
-           this.errorCinema = e;
+           this.errorEvent = e;
            console.log(e);
          });
       }
@@ -139,11 +138,11 @@ export default {
         person.eventsAttended.push(event);
         this.selectedPerson = '';
         this.selectedEvent = '';
-        this.errorRegistration = '';
+        this.errorEvent = '';
       })
       .catch(e => {
         e = e.response.data.message ? e.response.data.message : e;
-        this.errorRegistration = e;
+        this.errorEvent = e;
         console.log(e);
       });
     },
@@ -161,11 +160,11 @@ export default {
         volunteer.eventsVolunteered.push(response.data);
         this.selectedVolunteer = '';
         this.selectedEvent = '';
-        this.errorAssignment = '';
+        this.errorEvent = '';
       })
       .catch(e => {
         e = e.response.data.message ? e.response.data.message : e;
-        this.errorAssignment = e;
+        this.errorEvent = e;
         console.log(e);
       });
     },
@@ -190,11 +189,11 @@ export default {
         this.selectedEvent = '';
         this.userID = '';
         this.amount = 0;
-        this.errorPayment = '';
+        this.errorBitcoin = '';
       })
       .catch(e => {
         e = e.response.data.message ? e.response.data.message : e;
-        this.errorPayment = e;
+        this.errorBitcoin = e;
         console.log(e);
       });
     },
