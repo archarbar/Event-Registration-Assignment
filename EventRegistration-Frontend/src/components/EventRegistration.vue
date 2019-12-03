@@ -30,7 +30,6 @@
         </td>
         <td>
           <select id='create-person-person-type' v-model="personType">
-            <option disabled value="">Please select one</option>
             <option value="Person">Person</option>
             <option value="Volunteer">Volunteer</option>
           </select>
