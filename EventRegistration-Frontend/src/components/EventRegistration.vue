@@ -17,19 +17,15 @@
             </li>
           </ul>
         </td>
-        <!-- <td>
-           PAYMENT ID
-        </td>
-        <td>
-           AMOUNT
-        </td> -->
+        <!-- <td v-bind:id="`${event.name.replace(/\s/g, '_')}-name`">{{event.name}}</td>
+        <td v-bind:id="`${event.name.replace(/\s/g, '_')}-date`">{{event.date}}</td> -->
       <tr>
         <td>
           <input id="create_person_person_name" type="text" v-model="newPerson" placeholder="Person Name">
         </td>
         <td>
           <select id='create-person-person-type' v-model="personType">
-            <!-- <option disabled value="">Please select one</option> -->
+            <option disabled value="">Please select one</option>
             <option value="Person">Person</option>
             <option value="Volunteer">Volunteer</option>
           </select>

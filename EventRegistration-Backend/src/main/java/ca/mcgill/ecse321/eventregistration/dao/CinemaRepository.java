@@ -6,6 +6,6 @@ import ca.mcgill.ecse321.eventregistration.model.Cinema;
 
 public interface CinemaRepository extends CrudRepository<Cinema, String> {
 
-	Cinema findByMovie(String movie);
+	Cinema findByName(String name);
 
 }

@@ -25,10 +25,10 @@ export default {
     return {
       persons: [],
       volunteers: [],
-      cinemas: [],
       events: [],
+      cinemas: [],
       newPerson: '',
-      personType: 'Person',
+      personType: '',
       newEvent: {
         name: '',
         date: '2017-12-08',
@@ -36,7 +36,10 @@ export default {
         endTime: '11:00'
       },
       selectedPerson: '',
+      selectedVolunteer: '',
       selectedEvent: '',
+      userID: '',
+      amount: 0,
       errorPerson: '',
       errorVolunteer: '',
       errorEvent: '',
@@ -87,6 +90,7 @@ export default {
         AXIOS.post('/volunteers/'.concat(personName), {}, {})
         .then(response => {
           this.volunteers.push(response.data);
+          this.persons.push(response.data);
           this.errorVolunteer = '';
           this.newPerson = '';
        })
@@ -117,6 +121,7 @@ export default {
         AXIOS.post('/cinemas/'.concat(newEvent.name), {}, {params: newEvent})
         .then(response => {
           this.cinemas.push(response.data);
+          this.events.push(response.data);
           this.errorCinema = '';
           this.newEvent.name = this.newEvent.make = this.newEvent.movie = this.newEvent.company = this.newEvent.artist = this.newEvent.title = '';
         })
@@ -177,17 +182,19 @@ export default {
       let person = this.persons.find(x => x.name === personName);
       let params = {
         person: person.name,
-        event: event.name
+        event: event.name,
+        userID,
+        amount
       };
 
-      AXIOS.post('/pay', {}, {params: params})
+      AXIOS.post('/bitcoins', {}, {params: params})
       .then(response => {
-        getRegistrations(person).forEach(registration => {
-          if (registration.getEvent() === event) {
-            registration.getBitcoin().setUserID(userID);
-            registration.getBitcoin().setAmount(amount);
-          }
-        });
+        // getRegistrations(person).forEach(registration => {
+        //   if (registration.getEvent() === event) {
+        //     registration.getBitcoin().setUserID(userID);
+        //     registration.getBitcoin().setAmount(amount);
+        //   }
+        // });
         this.selectedPerson = '';
         this.selectedEvent = '';
         this.userID = '';

@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ca.mcgill.ecse321.eventregistration.model.*;
+import ca.mcgill.ecse321.eventregistration.dao.EventRepository;
+import ca.mcgill.ecse321.eventregistration.dao.PersonRepository;
+import ca.mcgill.ecse321.eventregistration.dao.VolunteerRepository;
 import ca.mcgill.ecse321.eventregistration.dto.*;
 import ca.mcgill.ecse321.eventregistration.service.EventRegistrationService;
 
@@ -24,6 +27,12 @@ public class EventRegistrationRestController {
 
 	@Autowired
 	private EventRegistrationService service;
+	@Autowired
+	private PersonRepository personRepository;
+	@Autowired
+	private EventRepository eventRepository;
+	@Autowired
+	private VolunteerRepository volunteerRepository;
 
 	// POST Mappings
 
@@ -78,44 +87,40 @@ public class EventRegistrationRestController {
 
 	// @formatter:off
 	@PostMapping(value = { "/register", "/register/" })
-	public RegistrationDto registerPersonForEvent(@RequestParam(name = "person") PersonDto pDto,
-			@RequestParam(name = "event") EventDto eDto) throws IllegalArgumentException {
+	public RegistrationDto registerPersonForEvent(@RequestParam(name = "person") String p,
+			@RequestParam(name = "event") String e) throws IllegalArgumentException {
 		// @formatter:on
 
 		// Both the person and the event are identified by their names
-		Person p = service.getPerson(pDto.getName());
-		Event e = service.getEvent(eDto.getName());
-
-		Registration r = service.register(p, e);
-		return convertToDto(r, p, e);
+		Person person = personRepository.findByName(p);
+		Event event = eventRepository.findByName(e);
+		Registration r = service.register(person, event);
+		return convertToDto(r, person, event);
 	}
 	
 	// @formatter:off
 	@PostMapping(value = { "/assign", "/assign/" })
-	public void assignVolunteerForEvent(@RequestParam(name = "volunteer") VolunteerDto vDto,
-			@RequestParam(name = "event") EventDto eDto) throws IllegalArgumentException {
+	public EventDto assignVolunteerForEvent(@RequestParam(name = "volunteer") String v,
+			@RequestParam(name = "event") String e) throws IllegalArgumentException {
 		// @formatter:on
 
 		// Both the volunteer and the event are identified by their names
-		Volunteer v = service.getVolunteer(vDto.getName());
-		Event e = service.getEvent(eDto.getName());
-
-		service.volunteersEvent(v, e);
+		Event event = eventRepository.findByName(e);
+		service.volunteersEvent(volunteerRepository.findByName(v), event);
+		return convertToDto(event);
 	}
 	
 	// @formatter:off
-	@PostMapping(value = { "/pay", "/pay/" })
-	public void payForRegistration(@RequestParam(name = "person") PersonDto pDto,
-			@RequestParam(name = "event") EventDto eDto,
+	@PostMapping(value = { "/bitcoins", "/bitcoins/" })
+	public BitcoinDto payForRegistration(@RequestParam(name = "person") String p,
+			@RequestParam(name = "event") String e,
 			@RequestParam(name = "userID") String userID,
 			@RequestParam(name = "amount") int amount) throws IllegalArgumentException {
 		// @formatter:on
-		
-		Person p = service.getPerson(pDto.getName());
-		Event e = service.getEvent(eDto.getName());
-		Registration registration = service.getRegistrationByPersonAndEvent(p, e);
+		Registration registration = service.getRegistrationByPersonAndEvent(personRepository.findByName(p), eventRepository.findByName(e));
 		Bitcoin bitcoin = service.createBitcoinPay(userID, amount);
 		service.pay(registration, bitcoin);
+		return convertToDto(bitcoin);
 	}
 
 	// GET Mappings
@@ -137,6 +142,15 @@ public class EventRegistrationRestController {
 		}
 		return cinemaDtos;
 	}
+	
+	@GetMapping(value = { "/bitcoins", "/bitcoins/" })
+	public List<BitcoinDto> getAllBitcoins() {
+		List<BitcoinDto> bitcoinDtos = new ArrayList<>();
+		for (Bitcoin bitcoin : service.getAllBitcoins()) {
+			bitcoinDtos.add(convertToDto(bitcoin));
+		}
+		return bitcoinDtos;
+	}
 
 	// Example REST call:
 	// http://localhost:8088/events/person/JohnDoe
@@ -145,10 +159,23 @@ public class EventRegistrationRestController {
 		Person p = convertToDomainObject(pDto);
 		return createAttendedEventDtosForPerson(p);
 	}
+	
+	// Example REST call:
+	// http://localhost:8088/events/volunteer/JohnDoe
+	@GetMapping(value = { "/events/volunteer/{name}", "/events/volunteer/{name}/" })
+	public List<EventDto> getEventsOfVolunteer(@PathVariable("name") VolunteerDto vDto) {
+		Volunteer v = convertToDomainObject(vDto);
+		return createVounteeredEventDtosForVolunteer(v);
+	}
 
 	@GetMapping(value = { "/persons/{name}", "/persons/{name}/" })
 	public PersonDto getPersonByName(@PathVariable("name") String name) throws IllegalArgumentException {
 		return convertToDto(service.getPerson(name));
+	}
+	
+	@GetMapping(value = { "/volunteers/{name}", "/volunteers/{name}/" })
+	public VolunteerDto getVolunteerByName(@PathVariable("name") String name) throws IllegalArgumentException {
+		return convertToDto(service.getVolunteer(name));
 	}
 
 	@GetMapping(value = { "/registrations", "/registrations/" })
@@ -192,6 +219,11 @@ public class EventRegistrationRestController {
 	@GetMapping(value = { "/events/{name}", "/events/{name}/" })
 	public EventDto getEventByName(@PathVariable("name") String name) throws IllegalArgumentException {
 		return convertToDto(service.getEvent(name));
+	}
+	
+	@GetMapping(value = { "/cinemas/{name}", "/cinemas/{name}/" })
+	public CinemaDto getCinemaByName(@PathVariable("name") String name) throws IllegalArgumentException {
+		return convertToDto(service.getCinema(name));
 	}
 
 	// Model - DTO conversion methods (not part of the API)
@@ -265,6 +297,16 @@ public class EventRegistrationRestController {
 		for (Person person : allPersons) {
 			if (person.getName().equals(pDto.getName())) {
 				return person;
+			}
+		}
+		return null;
+	}
+	
+	private Volunteer convertToDomainObject(VolunteerDto vDto) {
+		List<Volunteer> allVolunteers = service.getAllVolunteers();
+		for (Volunteer volunteer : allVolunteers) {
+			if (volunteer.getName().equals(vDto.getName())) {
+				return volunteer;
 			}
 		}
 		return null;

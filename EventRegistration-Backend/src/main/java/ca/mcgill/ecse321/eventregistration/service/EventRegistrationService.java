@@ -61,7 +61,7 @@ public class EventRegistrationService {
 	@Transactional
 	public Cinema createCinema(String name, Date date, Time startTime , Time endTime, String movie) {
 		Cinema cinema = new Cinema();
-		buildEvent(cinema, name, date, startTime, endTime);
+		buildEvent((Event) cinema, name, date, startTime, endTime);
 		if (cinemaRepository.existsById(name)) {
 			throw new IllegalArgumentException("Cinema has already been created!");
 		}
@@ -102,6 +102,11 @@ public class EventRegistrationService {
 	@Transactional
 	public List<Cinema> getAllCinemas() {
 		return toList(cinemaRepository.findAll());
+	}
+	
+	@Transactional
+	public List<Bitcoin> getAllBitcoins() {
+		return toList(bitcoinRepository.findAll());
 	}
 
 	@Transactional
@@ -154,6 +159,15 @@ public class EventRegistrationService {
 		}
 		Event event = eventRepository.findByName(name);
 		return event;
+	}
+	
+	@Transactional
+	public Cinema getCinema(String name) {
+		if (name == null || name.trim().length() == 0) {
+			throw new IllegalArgumentException("Cinema name cannot be empty!");
+		}
+		Cinema cinema = cinemaRepository.findByName(name);
+		return cinema;
 	}
 
 	// This returns all objects of instance "Event" (Subclasses are filtered out)
