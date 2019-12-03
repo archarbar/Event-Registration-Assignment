@@ -5,6 +5,8 @@
       <tr>
         <th>Name</th>
         <th>Events</th>
+        <th>Payment ID</th>
+        <th>Amount($)</th>
       </tr>
       <tr v-for="(person, i) in persons" v-bind:key="`person-${i}`">
         <td>{{person.name}}</td>
@@ -15,10 +17,22 @@
             </li>
           </ul>
         </td>
-      </tr>
+        <!-- <td>
+           PAYMENT ID
+        </td>
+        <td>
+           AMOUNT
+        </td> -->
       <tr>
         <td>
           <input id="create_person_person_name" type="text" v-model="newPerson" placeholder="Person Name">
+        </td>
+        <td>
+          <select id='create-person-person-type' v-model="personType">
+            <!-- <option disabled value="">Please select one</option> -->
+            <option value="Person">Person</option>
+            <option value="Volunteer">Volunteer</option>
+          </select>
         </td>
         <td>
           <button id="create_person_button" v-bind:disabled="!newPerson" @click="createPerson(personType, newPerson)">Create Person</button>
@@ -37,12 +51,14 @@
         <th>Date</th>
         <th>Start</th>
         <th>End</th>
+        <th>Movie</th>
       </tr>
       <tr v-for="(event, i) in events" v-bind:id="event.name" v-bind:key="`event-${i}`">
         <td v-bind:id="`${event.name.replace(/\s/g, '_')}-name`">{{event.name}}</td>
         <td v-bind:id="`${event.name.replace(/\s/g, '_')}-date`">{{event.date}}</td>
         <td v-bind:id="`${event.name.replace(/\s/g, '_')}-starttime`">{{event.startTime}}</td>
         <td v-bind:id="`${event.name.replace(/\s/g, '_')}-endtime`">{{event.endTime}}</td>
+        <td v-bind:id="`${event.name.replace(/\s/g, '_')}-movie`">{{event.movie}}</td>
       </tr>
       <tr>
         <td>
@@ -56,6 +72,9 @@
         </td>
         <td>
           <input id="event-endtime-input" type="time" v-model="newEvent.endTime" placeholder="HH:mm">
+        </td>
+        <td>
+          <input id="event-movie-input" value = "" type="text" v-model="newEvent.movie" placeholder="Movie Name">
         </td>
         <td>
           <button id="event-create-button" v-bind:disabled="!newEvent.name" v-on:click="createEvent(newEvent)">Create</button>
@@ -81,6 +100,51 @@
     <br/>
     <span v-if="errorRegistration" style="color:red">Error: {{errorRegistration}}</span>
     <hr>
+    <!-- ASSIGN PROFESSIONALS -->
+    <h2>Assign Professionals</h2>
+    <label>Volunteer:
+      <select id='assign-selected-volunteer' v-model="selectedVolunteer">
+        <option disabled value="">Please select one</option>
+        <option v-for="(volunteer, i) in volunteers" v-bind:key="`volunteer-${i}`">{{volunteer.name}}</option>
+      </select>
+    </label>
+    <label>Event:
+      <select id='assign-selected-event-volunteer' v-model="selectedEvent">
+        <option disabled value="">Please select one</option>
+        <option v-for="(event, i) in events" v-bind:key="`event-${i}`">{{event.name}}</option>
+      </select>
+    </label>
+    <button id='assign-button-volunteer' v-bind:disabled="!selectedEvent || !selectedEvent" @click="assignEvent(selectedVolunteer, selectedEvent)">Assign</button>
+    <br/>
+    <span v-if="errorRegistration" style="color:red">Error: {{errorRegistration}}</span>
+    <hr>
+    <!-- PAY FOR REGISTRATION  -->
+        <h2>Pay for Registration with Bitcoin</h2>
+    <label>Person:
+      <select id='bitcoin-person-select' v-model="selectedPerson">
+        <option disabled value="">Please select one</option>
+        <option v-for="(person, i) in persons" v-bind:key="`person-${i}`">{{person.name}}</option>
+      </select>
+    </label>
+    <label>Event:
+      <select id='bitcoin-event-select' v-model="selectedEvent">
+        <option disabled value="">Please select one</option>
+        <option v-for="(event, i) in events" v-bind:key="`event-${i}`">{{event.name}}</option>
+      </select>
+    </label>
+    <br>
+      <label>Device Id:
+        <input id="bitcoin-id-input" type="text" v-model="userID" placeholder="ex: AAAA-1111">
+      </label>
+      <label>Amount:
+        <input id="bitcoin-amount-input" type="test" v-model="amount" placeholder="ex: 2">
+      </label>
+    <br>
+    <button id='bitcoin-button' v-bind:disabled="!selectedPerson || !selectedEvent" @click="makePayment(selectedPerson, selectedEvent, userID, amount)">Make payment</button>
+    <br/>
+    <span v-if="errorRegistration" style="color:red">Error: {{errorRegistration}}</span>
+    <hr>
+
   </div>
 </template>
 

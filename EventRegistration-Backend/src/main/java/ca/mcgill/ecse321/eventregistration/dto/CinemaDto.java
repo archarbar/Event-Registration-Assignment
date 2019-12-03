@@ -14,10 +14,6 @@ public class CinemaDto {
 	public CinemaDto() {
 	}
 
-	public CinemaDto(String movie) {
-		this("StarCite", Date.valueOf("1971-01-01"), Time.valueOf("00:00:00"), Time.valueOf("23:59:59"), movie);
-	}
-
 	public CinemaDto(String name, Date date, Time startTime, Time endTime, String movie) {
 		this.name = name;
 		this.date = date;

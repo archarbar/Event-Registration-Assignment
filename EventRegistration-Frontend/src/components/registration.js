@@ -24,6 +24,8 @@ export default {
   data() {
     return {
       persons: [],
+      volunteers: [],
+      cinemas: [],
       events: [],
       newPerson: '',
       personType: 'Person',
@@ -36,7 +38,9 @@ export default {
       selectedPerson: '',
       selectedEvent: '',
       errorPerson: '',
+      errorVolunteer: '',
       errorEvent: '',
+      errorCinema: '',
       errorRegistration: '',
       response: [],
     }
@@ -50,40 +54,78 @@ export default {
     })
     .catch(e => {this.errorPerson = e});
 
+    AXIOS.get('/volunteers')
+    .then(response => {
+      this.volunteers = response.data;
+      this.volunteers.forEach(volunteer => this.getRegistrations(volunteer.name))
+    })
+    .catch(e => {this.errorPerson = e});
+
     AXIOS.get('/events').then(response => {this.events = response.data}).catch(e => {this.errorEvent = e});
+
+    AXIOS.get('/cinemas').then(response => {this.cinemas = response.data}).catch(e => {this.errorCinema = e});
 
   },
 
   methods: {
 
     createPerson: function (personType, personName) {
-      AXIOS.post('/persons/'.concat(personName), {}, {})
-      .then(response => {
-        this.persons.push(response.data);
-        this.errorPerson = '';
-        this.newPerson = '';
-      })
-      .catch(e => {
-        e = e.response.data.message ? e.response.data.message : e;
-        this.errorPerson = e;
-        console.log(e);
-      });
+      if (personType === "Person") {
+       AXIOS.post('/persons/'.concat(personName), {}, {})
+        .then(response => {
+          this.persons.push(response.data);
+          this.errorPerson = '';
+          this.newPerson = '';
+       })
+       .catch(e => {
+          e = e.response.data.message ? e.response.data.message : e;
+          this.errorPerson = e;
+         console.log(e);
+        });
+      }
+      else if (personType === "Volunteer") {
+        AXIOS.post('/volunteers/'.concat(personName), {}, {})
+        .then(response => {
+          this.volunteers.push(response.data);
+          this.errorVolunteer = '';
+          this.newPerson = '';
+       })
+       .catch(e => {
+          e = e.response.data.message ? e.response.data.message : e;
+          this.errorVolunteer = e;
+         console.log(e);
+        });
+      }
     },
 
     createEvent: function (newEvent) {
       let url = '';
-
-      AXIOS.post('/events/'.concat(newEvent.name), {}, {params: newEvent})
-      .then(response => {
-        this.events.push(response.data);
-        this.errorEvent = '';
-        this.newEvent.name = this.newEvent.make = this.newEvent.movie = this.newEvent.company = this.newEvent.artist = this.newEvent.title = '';
-      })
-      .catch(e => {
-        e = e.response.data.message ? e.response.data.message : e;
-        this.errorEvent = e;
-        console.log(e);
-      });
+      if (newEvent.movie === undefined || newEvent.movie === null || newEvent.movie.trim().length === 0) {
+       AXIOS.post('/events/'.concat(newEvent.name), {}, {params: newEvent})
+       .then(response => {
+         this.events.push(response.data);
+         this.errorEvent = '';
+         this.newEvent.name = this.newEvent.make = this.newEvent.movie = this.newEvent.company = this.newEvent.artist = this.newEvent.title = '';
+       })
+       .catch(e => {
+         e = e.response.data.message ? e.response.data.message : e;
+          this.errorEvent = e;
+          console.log(e);
+        });
+      }
+      else {
+        AXIOS.post('/cinemas/'.concat(newEvent.name), {}, {params: newEvent})
+        .then(response => {
+          this.cinemas.push(response.data);
+          this.errorCinema = '';
+          this.newEvent.name = this.newEvent.make = this.newEvent.movie = this.newEvent.company = this.newEvent.artist = this.newEvent.title = '';
+        })
+        .catch(e => {
+          e = e.response.data.message ? e.response.data.message : e;
+           this.errorCinema = e;
+           console.log(e);
+         });
+      }
     },
 
     registerEvent: function (personName, eventName) {
@@ -104,6 +146,57 @@ export default {
       .catch(e => {
         e = e.response.data.message ? e.response.data.message : e;
         this.errorRegistration = e;
+        console.log(e);
+      });
+    },
+
+    assignEvent: function (volunteerName, eventName) {
+      let event = this.events.find(x => x.name === eventName);
+      let volunteer = this.volunteers.find(x => x.name === volunteerName);
+      let params = {
+        volunteer: volunteer.name,
+        event: event.name
+      };
+
+      AXIOS.post('/assign', {}, {params: params})
+      .then(response => {
+        volunteer.eventsVolunteered.push(event)
+        this.selectedVolunteer = '';
+        this.selectedEvent = '';
+        this.errorAssignment = '';
+      })
+      .catch(e => {
+        e = e.response.data.message ? e.response.data.message : e;
+        this.errorAssignment = e;
+        console.log(e);
+      });
+    },
+
+    makePayment: function (personName, eventName, userID, amount) {
+      let event = this.events.find(x => x.name === eventName);
+      let person = this.persons.find(x => x.name === personName);
+      let params = {
+        person: person.name,
+        event: event.name
+      };
+
+      AXIOS.post('/pay', {}, {params: params})
+      .then(response => {
+        getRegistrations(person).forEach(registration => {
+          if (registration.getEvent() === event) {
+            registration.getBitcoin().setUserID(userID);
+            registration.getBitcoin().setAmount(amount);
+          }
+        });
+        this.selectedPerson = '';
+        this.selectedEvent = '';
+        this.userID = '';
+        this.amount = 0;
+        this.errorPayment = '';
+      })
+      .catch(e => {
+        e = e.response.data.message ? e.response.data.message : e;
+        this.errorPayment = e;
         console.log(e);
       });
     },

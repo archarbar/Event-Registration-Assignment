@@ -22,6 +22,10 @@ public class BitcoinDto {
 		return this.amount;
 	}
 	
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+	
 	public String getUserID() {
 		return this.userID;
 	}

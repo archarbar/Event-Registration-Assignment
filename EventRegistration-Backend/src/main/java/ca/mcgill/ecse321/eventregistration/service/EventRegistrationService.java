@@ -227,6 +227,9 @@ public class EventRegistrationService {
 			throw new IllegalArgumentException("Person cannot be null!");
 		}
 		List<Event> eventsAttendedByPerson = new ArrayList<>();
+		if (registrationRepository.findByPerson(person) == null) {
+			return null;
+		}
 		for (Registration r : registrationRepository.findByPerson(person)) {
 			eventsAttendedByPerson.add(r.getEvent());
 		}
@@ -239,6 +242,9 @@ public class EventRegistrationService {
 			throw new IllegalArgumentException("Volunteer cannot be null!");
 		}
 		List<Event> eventsVolunteeredByVolunteer = new ArrayList<>();
+		if (volunteer.getVolunteers() == null) {
+			return null;
+		}
 		for (Event e : volunteer.getVolunteers()) {
 			eventsVolunteeredByVolunteer.add(e);
 		}

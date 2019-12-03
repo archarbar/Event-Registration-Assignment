@@ -39,6 +39,7 @@ public class EventRegistrationRestController {
 		return convertToDto(person);
 	}
 	
+	// @formatter:off
 	// Example REST call:
 	// http://localhost:8088/volunteers/John
 	@PostMapping(value = { "/volunteers/{name}", "/volunteers/{name}/" })
@@ -63,12 +64,12 @@ public class EventRegistrationRestController {
 	
 	// @formatter:off
 	// Example REST call:
-	// http://localhost:8080/Cinemas/testcinema?date=2013-10-23&startTime=00:00&endTime=23:59&movie=joker
-	@PostMapping(value = { "/Cinemas/{name}", "/Cinemas/{name}/" })
+	// http://localhost:8080/cinemas/testcinema?date=2013-10-23&startTime=00:00&endTime=23:59&movie=joker
+	@PostMapping(value = { "/cinemas/{name}", "/cinemas/{name}/" })
 	public CinemaDto createCinema(@PathVariable("name") String name, @RequestParam Date date,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME, pattern = "HH:mm") LocalTime startTime,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME, pattern = "HH:mm") LocalTime endTime, 
-			@RequestParam																												("movie") String movie)
+			@RequestParam(name = "movie") String movie)
 			throws IllegalArgumentException {
 		// @formatter:on
 		Cinema Cinema = service.createCinema(name, date, Time.valueOf(startTime), Time.valueOf(endTime), movie);
@@ -126,6 +127,15 @@ public class EventRegistrationRestController {
 			eventDtos.add(convertToDto(event));
 		}
 		return eventDtos;
+	}	
+	
+	@GetMapping(value = { "/cinemas", "/cinemas/" })
+	public List<CinemaDto> getAllCinemas() {
+		List<CinemaDto> cinemaDtos = new ArrayList<>();
+		for (Cinema cinema : service.getAllCinemas()) {
+			cinemaDtos.add(convertToDto(cinema));
+		}
+		return cinemaDtos;
 	}
 
 	// Example REST call:
@@ -169,6 +179,15 @@ public class EventRegistrationRestController {
 		}
 		return persons;
 	}
+	
+	@GetMapping(value = { "/volunteers", "/volunteers/" })
+	public List<VolunteerDto> getAllVolunteers() {
+		List<VolunteerDto> volunteers = new ArrayList<>();
+		for (Volunteer volunteer : service.getAllVolunteers()) {
+			volunteers.add(convertToDto(volunteer));
+		}
+		return volunteers;
+	}
 
 	@GetMapping(value = { "/events/{name}", "/events/{name}/" })
 	public EventDto getEventByName(@PathVariable("name") String name) throws IllegalArgumentException {
@@ -206,7 +225,7 @@ public class EventRegistrationRestController {
 		if (c == null) {
 			throw new IllegalArgumentException("There is no such Cinema!");
 		}
-		CinemaDto cinemaDto = new CinemaDto(c.getMovie());
+		CinemaDto cinemaDto = new CinemaDto(c.getName(), c.getDate(), c.getStartTime(), c.getEndTime(), c.getMovie());
 		return cinemaDto;
 	}
 	
@@ -214,7 +233,7 @@ public class EventRegistrationRestController {
 		if (v == null) {
 			throw new IllegalArgumentException("There is no such Volunteer!");
 		}
-		VolunteerDto volunteerDto = new VolunteerDto();
+		VolunteerDto volunteerDto = new VolunteerDto(v.getName());
 		volunteerDto.setVolunteers(createVounteeredEventDtosForVolunteer(v));
 		return volunteerDto;
 	}
@@ -255,6 +274,9 @@ public class EventRegistrationRestController {
 
 	private List<EventDto> createAttendedEventDtosForPerson(Person p) {
 		List<Event> eventsForPerson = service.getEventsAttendedByPerson(p);
+		if (eventsForPerson == null) {
+			return null;
+		}
 		List<EventDto> events = new ArrayList<>();
 		for (Event event : eventsForPerson) {
 			events.add(convertToDto(event));
@@ -264,6 +286,9 @@ public class EventRegistrationRestController {
 	
 	private List<EventDto> createVounteeredEventDtosForVolunteer(Volunteer v) {
 		List<Event> eventsForVolunteer = service.getEventsVolunteeredByVolunteer(v);
+		if (eventsForVolunteer == null) {
+			return null;
+		}
 		List<EventDto> events = new ArrayList<>();
 		for (Event event : eventsForVolunteer) {
 			events.add(convertToDto(event));
