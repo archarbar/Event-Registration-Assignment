@@ -188,7 +188,6 @@ export default {
         this.userID = '';
         this.amount = '';
         this.errorBitcoin = '';
-        alert(response.data.stringify)
       })
       .catch(e => {
         e = e.response.data.message ? e.response.data.message : e;

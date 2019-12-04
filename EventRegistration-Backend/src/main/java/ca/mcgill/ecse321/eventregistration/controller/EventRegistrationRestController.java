@@ -198,7 +198,7 @@ public class EventRegistrationRestController {
 	}
 	
 	@GetMapping(value = { "/events/bitcoin/{personName}/{eventName}", "/events/bitcoin/{personName}/{eventName}/" })
-	public BitcoinDto getBitcoinForRegistration(@RequestParam("personName") PersonDto pDto, @RequestParam("eventName") EventDto eDto)
+	public BitcoinDto getBitcoinForRegistration(@PathVariable("personName") PersonDto pDto, @PathVariable("eventName") EventDto eDto)
 			throws IllegalArgumentException {
 		// Both the person and the event are identified by their names
 		Person p = service.getPerson(pDto.getName());

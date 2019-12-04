@@ -108,7 +108,7 @@ module.exports = {
                 browser.setValue(config.componentIDs.paymentEvent, testData.validPaymentData.eventName)
                         .setValue(config.componentIDs.paymentId, testData.validPaymentData.userID)
                         .setValue(config.componentIDs.paymentAmount, testData.validPaymentData.amount)
-                        .click(config.componentIDs.paymentButton).pause(1000);
+                        .click(config.componentIDs.paymentButton).pause(2000);
 
                 // get text from table and change it to be lower case and no space (adopt different convension of payment type)
                 browser.getText(config.componentIDs.registrationTable, function (result) {

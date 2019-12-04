@@ -320,13 +320,14 @@ public class EventRegistrationService {
 		if (volunteer.getVolunteers() != null) {
 			events = volunteer.getVolunteers();
 			events.add(event);
-			volunteer.setVolunteers(events);
+
 		}
 		else {
 			events = new HashSet<Event>();
 			events.add(event);
 		}
 		volunteer.setVolunteers(events);
+		volunteerRepository.save(volunteer);
 	}
 	
 	public Bitcoin createBitcoinPay(String userID, int amount) {
