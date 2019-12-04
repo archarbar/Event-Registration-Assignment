@@ -116,9 +116,9 @@ public class EventRegistrationRestController {
 	public BitcoinDto payForRegistration(@RequestParam(name = "person") String p,
 			@RequestParam(name = "event") String e,
 			@RequestParam(name = "userID") String userID,
-			@RequestParam(name = "amount") String amount) throws IllegalArgumentException {
+			@RequestParam(name = "amount") int amount) throws IllegalArgumentException {
 		// @formatter:on
-		Registration registration = service.getRegistrationByPersonAndEvent(personRepository.findByName(p), eventRepository.findByName(e));
+		Registration registration = service.getRegistrationByPersonAndEvent(service.getPerson(p), service.getEvent(e));
 		Bitcoin bitcoin = service.createBitcoinPay(userID, amount);
 		service.pay(registration, bitcoin);
 		return convertToDto(bitcoin);
@@ -201,14 +201,10 @@ public class EventRegistrationRestController {
 	public BitcoinDto getBitcoinForRegistration(@RequestParam("personName") PersonDto pDto, @RequestParam("eventName") EventDto eDto)
 			throws IllegalArgumentException {
 		// Both the person and the event are identified by their names
-		Person p = convertToDomainObject(pDto);
-		Event e = convertToDomainObject(eDto);
-		for (Registration r: service.getAllRegistrations()) {
-			if (r.getEvent() == e && r.getPerson() == p) {
-				return convertToDto(r.getBitcoin());
-			}
-		}
-		return null;
+		Person p = service.getPerson(pDto.getName());
+		Event e = service.getEvent(eDto.getName());
+		Bitcoin bitcoin = service.getBitcoinByPersonAndEvent(p, e);
+		return convertToDto(bitcoin);
 	}
 	
 //	@GetMapping(value = { "/events/bitcoin/{personName}/{eventName}", "/events/bitcoin/{personName}/{eventName}/" })
@@ -217,8 +213,10 @@ public class EventRegistrationRestController {
 //		// Both the person and the event are identified by their names
 //		Person person = service.getPerson(p);
 //		Event event = service.getEvent(e);
-//		Registration r = service.getRegistrationByPersonAndEvent(person, event);
-//		Bitcoin bitcoin = r.getBitcoin();
+//		Bitcoin bitcoin = service.getBitcoinByPersonAndEvent(person, event);
+//		if (bitcoin == null) {
+//			return null;
+//		}
 //		return convertToDto(bitcoin);
 //	}
 

@@ -170,14 +170,14 @@ export default {
       });
     },
 
-    makePayment: function (personName, eventName) {
+    makePayment: function (personName, eventName, userID, amount) {
       let event = this.events.find(x => x.name === eventName);
       let person = this.persons.find(x => x.name === personName);
       let params = {
         person: person.name,
         event: event.name,
-        userID: this.userID,
-        amount: this.amount
+        userID,
+        amount
       };
 
       AXIOS.post('/bitcoins', {}, {params: params})
@@ -188,6 +188,7 @@ export default {
         this.userID = '';
         this.amount = '';
         this.errorBitcoin = '';
+        alert(response.data.stringify)
       })
       .catch(e => {
         e = e.response.data.message ? e.response.data.message : e;
@@ -222,7 +223,7 @@ export default {
 
     getPayments: function (personName, eventName) {
       return new Promise(function (resolve, reject) {
-        AXIOS.get('/events/bitcoin/'.concat(personName).concat('/').concat(eventName))
+        AXIOS.get('/events/bitcoin/' + personName + '/' + eventName)
         .then(response => {
           if (!response.data || response.data.length <= 0) reject();
           resolve(response.data)

@@ -148,10 +148,10 @@
         <input id="bitcoin-id-input" type="text" v-model="userID" placeholder="ex: AAAA-1111">
       </label>
       <label>Amount:
-        <input id="bitcoin-amount-input" type="text" v-model="amount" placeholder="ex: 2">
+        <input id="bitcoin-amount-input" type="number" v-model="amount" placeholder="ex: 2">
       </label>
     <br>
-    <button id='bitcoin-button' v-bind:disabled="!selectedPersonPay || !selectedEventPay" @click="makePayment(selectedPersonPay, selectedEventPay)">Make payment</button>
+    <button id='bitcoin-button' v-bind:disabled="!selectedPersonPay || !selectedEventPay" @click="makePayment(selectedPersonPay, selectedEventPay, userID, amount)">Make payment</button>
     <br/>
     <span id="bitcoin-error" v-if="errorBitcoin" style="color:red">Error: {{errorBitcoin}}</span>
     <hr>

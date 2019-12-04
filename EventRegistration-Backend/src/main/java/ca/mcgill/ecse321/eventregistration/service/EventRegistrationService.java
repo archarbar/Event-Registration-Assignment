@@ -249,6 +249,17 @@ public class EventRegistrationService {
 
 		return registrationRepository.findByPersonAndEvent(person, event);
 	}
+	
+	@Transactional
+	public Bitcoin getBitcoinByPersonAndEvent(Person person, Event event) {
+		if (person == null || event == null) {
+			throw new IllegalArgumentException("Person or Event cannot be null!");
+		}
+
+		Registration r = registrationRepository.findByPersonAndEvent(person, event);
+		return r.getBitcoin();
+	}
+	
 	@Transactional
 	public List<Registration> getRegistrationsForPerson(Person person){
 		if (person == null) {
@@ -318,12 +329,12 @@ public class EventRegistrationService {
 		volunteer.setVolunteers(events);
 	}
 	
-	public Bitcoin createBitcoinPay(String userID, String amount) {
+	public Bitcoin createBitcoinPay(String userID, int amount) {
 		String regex = "[a-zA-Z]{4}-[0-9]{4}"; // match a string of 4 letters followed by a - and 4 numbers
 		if (userID == null || !userID.matches(regex)) {
 			throw new IllegalArgumentException("User id is null or has wrong format!");
 		}
-		if (Integer.parseInt(amount) < 0) {
+		if (amount < 0) {
 			throw new IllegalArgumentException("Payment amount cannot be negative!");
 		}
 		Bitcoin bitcoin = new Bitcoin();
