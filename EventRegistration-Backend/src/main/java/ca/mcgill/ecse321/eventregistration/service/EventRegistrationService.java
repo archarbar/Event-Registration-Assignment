@@ -57,22 +57,6 @@ public class EventRegistrationService {
 		volunteerRepository.save(volunteer);
 		return volunteer;
 	}
-	
-	@Transactional
-	public Cinema createCinema(String name, Date date, Time startTime , Time endTime, String movie) {
-		Cinema cinema = new Cinema();
-		buildEvent((Event) cinema, name, date, startTime, endTime);
-		if (cinemaRepository.existsById(name)) {
-			throw new IllegalArgumentException("Cinema has already been created!");
-		}
-		if (movie == null || movie.trim().length() == 0) {
-			throw new IllegalArgumentException("Cinema movie cannot be empty!");
-		}
-		cinema.setMovie(movie);
-		cinemaRepository.save(cinema);
-		return cinema;
-	}
-
 
 	@Transactional
 	public Person getPerson(String name) {
@@ -143,6 +127,12 @@ public class EventRegistrationService {
 		event.setEndTime(endTime);
 		return event;
 	}
+	
+//	@Transactional
+//	public Event buildCinema(Cinema cinema, String name, Date date, Time startTime, Time endTime, String movie) {
+//		// Input validation
+//		return cinema;
+//	}
 
 	@Transactional
 	public Event createEvent(String name, Date date, Time startTime, Time endTime) {
@@ -150,6 +140,43 @@ public class EventRegistrationService {
 		buildEvent(event, name, date, startTime, endTime);
 		eventRepository.save(event);
 		return event;
+	}
+	
+	@Transactional
+	public Cinema createCinema(String name, Date date, Time startTime , Time endTime, String movie) {
+		Cinema cinema = new Cinema();
+		String error = "";
+		if (name == null || name.trim().length() == 0) {
+			error = error + "Event name cannot be empty! ";
+		} else if (cinemaRepository.existsById(name)) {
+			throw new IllegalArgumentException("Event has already been created!");
+		}
+		if (date == null) {
+			error = error + "Event date cannot be empty! ";
+		}
+		if (startTime == null) {
+			error = error + "Event start time cannot be empty! ";
+		}
+		if (endTime == null) {
+			error = error + "Event end time cannot be empty! ";
+		}
+		if (endTime != null && startTime != null && endTime.before(startTime)) {
+			error = error + "Event end time cannot be before cinema start time!";
+		}
+		if (movie == null || movie.trim().length() == 0) {
+			throw new IllegalArgumentException("Cinema movie cannot be empty!");
+		}
+		error = error.trim();
+		if (error.length() > 0) {
+			throw new IllegalArgumentException(error);
+		}
+		cinema.setName(name);
+		cinema.setDate(date);
+		cinema.setStartTime(startTime);
+		cinema.setEndTime(endTime);
+		cinema.setMovie(movie);
+		cinemaRepository.save(cinema);
+		return cinema;
 	}
 
 	@Transactional
@@ -291,12 +318,12 @@ public class EventRegistrationService {
 		volunteer.setVolunteers(events);
 	}
 	
-	public Bitcoin createBitcoinPay(String userID, int amount) {
+	public Bitcoin createBitcoinPay(String userID, String amount) {
 		String regex = "[a-zA-Z]{4}-[0-9]{4}"; // match a string of 4 letters followed by a - and 4 numbers
 		if (userID == null || !userID.matches(regex)) {
 			throw new IllegalArgumentException("User id is null or has wrong format!");
 		}
-		if (amount < 0) {
+		if (Integer.parseInt(amount) < 0) {
 			throw new IllegalArgumentException("Payment amount cannot be negative!");
 		}
 		Bitcoin bitcoin = new Bitcoin();

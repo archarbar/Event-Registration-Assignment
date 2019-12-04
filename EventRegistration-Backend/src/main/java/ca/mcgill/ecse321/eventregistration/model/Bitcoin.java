@@ -10,14 +10,14 @@ import ca.mcgill.ecse321.eventregistration.model.Person;
 @Entity
 public class Bitcoin {
 	
-	private int amount;
+	private String amount;
 	
 	@Id
-	public int getAmount() {
+	public String getAmount() {
 		return this.amount;
 	}
 	
-	public void setAmount(int amount) {
+	public void setAmount(String amount) {
 		this.amount = amount;
 	}
 	

@@ -27,10 +27,8 @@ export default {
       volunteers: [],
       events: [],
       cinemas: [],
-      registrations: [],
-      bitcoins: [],
       newPerson: '',
-      personType: '',
+      personType: 'Person',
       newEvent: {
         name: '',
         date: '2017-12-08',
@@ -40,8 +38,10 @@ export default {
       selectedPerson: '',
       selectedVolunteer: '',
       selectedEvent: '',
+      selectedPersonPay: '',
+      selectedEventPay: '',
       userID: '',
-      amount: 0,
+      amount: '',
       errorPerson: '',
       errorEvent: '',
       errorRegistration: '',
@@ -95,9 +95,13 @@ export default {
     },
 
     createEvent: function (newEvent) {
+      if (!newEvent.date) { // if event date is invalid, set it to a valid date
+        newEvent.date = "2030-10-10";
+      }
       if (newEvent.movie === undefined || newEvent.movie === null || newEvent.movie.trim().length === 0) {
        AXIOS.post('/events/'.concat(newEvent.name), {}, {params: newEvent})
        .then(response => {
+         response.data.movie = "--";
          this.events.push(response.data);
          this.errorEvent = '';
          this.newEvent.name = this.newEvent.make = this.newEvent.movie = this.newEvent.company = this.newEvent.artist = this.newEvent.title = '';
@@ -111,7 +115,6 @@ export default {
       else {
         AXIOS.post('/cinemas/'.concat(newEvent.name), {}, {params: newEvent})
         .then(response => {
-          this.cinemas.push(response.data);
           this.events.push(response.data);
           this.errorEvent = '';
           this.newEvent.name = this.newEvent.make = this.newEvent.movie = this.newEvent.company = this.newEvent.artist = this.newEvent.title = '';
@@ -134,7 +137,6 @@ export default {
 
       AXIOS.post('/register', {}, {params: params})
       .then(response => {
-        this.registrations.push(response.data);
         person.eventsAttended.push(event);
         this.selectedPerson = '';
         this.selectedEvent = '';
@@ -157,7 +159,6 @@ export default {
 
       AXIOS.post('/assign', {}, {params: params})
       .then(response => {
-        volunteer.eventsVolunteered.push(response.data);
         this.selectedVolunteer = '';
         this.selectedEvent = '';
         this.errorEvent = '';
@@ -169,30 +170,29 @@ export default {
       });
     },
 
-    makePayment: function (personName, eventName, userID, amount) {
+    makePayment: function (personName, eventName) {
       let event = this.events.find(x => x.name === eventName);
       let person = this.persons.find(x => x.name === personName);
-      let registration = this.registrations.find(x => (x.person === person) || (x.event === event));
       let params = {
         person: person.name,
         event: event.name,
-        registration,
-        userID,
-        amount
+        userID: this.userID,
+        amount: this.amount
       };
 
       AXIOS.post('/bitcoins', {}, {params: params})
       .then(response => {
-        this.bitcoins.push(response.data);
-        this.registration.bitcoin = response.data;
+        this.persons.forEach(person => this.getRegistrations(person.name));
         this.selectedPerson = '';
         this.selectedEvent = '';
         this.userID = '';
-        this.amount = 0;
+        this.amount = '';
         this.errorBitcoin = '';
       })
       .catch(e => {
         e = e.response.data.message ? e.response.data.message : e;
+        this.userID = '';
+        this.amount = '';
         this.errorBitcoin = e;
         console.log(e);
       });
@@ -206,7 +206,12 @@ export default {
         let indexPart = this.persons.map(x => x.name).indexOf(personName);
         this.persons[indexPart].eventsAttended = [];
         response.data.forEach(event => {
-          this.persons[indexPart].eventsAttended.push(event);
+          var promise = this.getPayments(this.persons[indexPart].name, event.name);
+            promise.then(response => {
+              event.amount = response.amount,
+              event.userID = response.userID,
+              this.persons[indexPart].eventsAttended.push(event);
+            })
         });
       })
       .catch(e => {
@@ -215,35 +220,18 @@ export default {
       });
     },
 
-    getVolunteeredEvents: function (volunteerName) {
-      AXIOS.get('/events/volunteer/'.concat(volunteerName))
-      .then(response => {
-        if (!response.data || response.data.length <= 0) return;
-
-        let indexPart = this.volunteers.map(x => x.name).indexOf(volunteerName);
-        this.volunteers[indexPart].eventsVolunteered = [];
-        response.data.forEach(event => {
-          this.volunteers[indexPart].eventsVolunteered.push(event);
+    getPayments: function (personName, eventName) {
+      return new Promise(function (resolve, reject) {
+        AXIOS.get('/events/bitcoin/'.concat(personName).concat('/').concat(eventName))
+        .then(response => {
+          if (!response.data || response.data.length <= 0) reject();
+          resolve(response.data)
+        })
+        .catch(e => {
+          e = e.response.data.message ? e.response.data.message : e;
+          console.log(e);
         });
       })
-      .catch(e => {
-        e = e.response.data.message ? e.response.data.message : e;
-        console.log(e);
-      });
-    },
-
-    getBitcoin: function (registrationId) {
-      AXIOS.get('/registrations'.concat(registrationId).concat('bitcoin'))
-      .then(response => {
-        if (!response.data || response.data.length <= 0) return;
-
-        let indexPart = this.registrations.map(x => x.id).indexOf(registrationId);
-        this.registrations[indexPart].bitcoin = response.data;
-      })
-      .catch(e => {
-        e = e.response.data.message ? e.response.data.message : e;
-        console.log(e);
-      });
-    },
+    }
   }
 }

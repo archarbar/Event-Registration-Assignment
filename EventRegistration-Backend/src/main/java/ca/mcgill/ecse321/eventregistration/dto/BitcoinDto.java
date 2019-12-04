@@ -3,22 +3,22 @@ package ca.mcgill.ecse321.eventregistration.dto;
 
 public class BitcoinDto {
 	
-	private int amount;
+	private String amount;
 	private String userID;
 
 	public BitcoinDto() {
 	}
 	
-	public BitcoinDto(int amount, String userID) {
+	public BitcoinDto(String amount, String userID) {
 		this.amount = amount;
 		this.userID = userID;
 	}
 	
-	public int getAmount() {
+	public String getAmount() {
 		return this.amount;
 	}
 	
-	public void setAmount(int amount) {
+	public void setAmount(String amount) {
 		this.amount = amount;
 	}
 	

@@ -10,7 +10,7 @@ const config = {
       error: "#event-error"
     },
     time: {
-      pause: 250,
+      pause: 1000,
       visible: 1000
     }
   }

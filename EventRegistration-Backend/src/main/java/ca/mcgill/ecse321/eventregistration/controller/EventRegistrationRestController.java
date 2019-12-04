@@ -116,7 +116,7 @@ public class EventRegistrationRestController {
 	public BitcoinDto payForRegistration(@RequestParam(name = "person") String p,
 			@RequestParam(name = "event") String e,
 			@RequestParam(name = "userID") String userID,
-			@RequestParam(name = "amount") int amount) throws IllegalArgumentException {
+			@RequestParam(name = "amount") String amount) throws IllegalArgumentException {
 		// @formatter:on
 		Registration registration = service.getRegistrationByPersonAndEvent(personRepository.findByName(p), eventRepository.findByName(e));
 		Bitcoin bitcoin = service.createBitcoinPay(userID, amount);
@@ -152,6 +152,15 @@ public class EventRegistrationRestController {
 		}
 		return bitcoinDtos;
 	}
+	
+	@GetMapping(value = { "/registrations", "/registrations/" })
+	public List<RegistrationDto> getAllRegistrations() {
+		List<RegistrationDto> registrationDtos = new ArrayList<>();
+		for (Registration registration : service.getAllRegistrations()) {
+			registrationDtos.add(convertToDto(registration));
+		}
+		return registrationDtos;
+	}
 
 	// Example REST call:
 	// http://localhost:8088/events/person/JohnDoe
@@ -179,17 +188,6 @@ public class EventRegistrationRestController {
 		return convertToDto(service.getVolunteer(name));
 	}
 
-	@GetMapping(value = { "/registrations", "/registrations/" })
-	public RegistrationDto getRegistration(@RequestParam(name = "person") PersonDto pDto,
-			@RequestParam(name = "event") EventDto eDto) throws IllegalArgumentException {
-		// Both the person and the event are identified by their names
-		Person p = service.getPerson(pDto.getName());
-		Event e = service.getEvent(eDto.getName());
-
-		Registration r = service.getRegistrationByPersonAndEvent(p, e);
-		return convertToDtoWithoutPerson(r);
-	}
-
 	@GetMapping(value = { "/registrations/person/{name}", "/registrations/person/{name}/" })
 	public List<RegistrationDto> getRegistrationsForPerson(@PathVariable("name") PersonDto pDto)
 			throws IllegalArgumentException {
@@ -199,15 +197,30 @@ public class EventRegistrationRestController {
 		return createRegistrationDtosForPerson(p);
 	}
 	
-	@GetMapping(value = { "/registrations/{id}/bitcoin", "/registrations/{id}/bitcoin/" })
-	public BitcoinDto getBitcoinForRegistration(@PathVariable("id") RegistrationDto rDto)
+	@GetMapping(value = { "/events/bitcoin/{personName}/{eventName}", "/events/bitcoin/{personName}/{eventName}/" })
+	public BitcoinDto getBitcoinForRegistration(@RequestParam("personName") PersonDto pDto, @RequestParam("eventName") EventDto eDto)
 			throws IllegalArgumentException {
 		// Both the person and the event are identified by their names
-		Registration r = service.getRegistrationByPersonAndEvent(service.getPerson(rDto.getPerson().getName()), 
-				service.getEvent(rDto.getEvent().getName()));
-		Bitcoin bitcoin = r.getBitcoin();
-		return convertToDto(bitcoin);
+		Person p = convertToDomainObject(pDto);
+		Event e = convertToDomainObject(eDto);
+		for (Registration r: service.getAllRegistrations()) {
+			if (r.getEvent() == e && r.getPerson() == p) {
+				return convertToDto(r.getBitcoin());
+			}
+		}
+		return null;
 	}
+	
+//	@GetMapping(value = { "/events/bitcoin/{personName}/{eventName}", "/events/bitcoin/{personName}/{eventName}/" })
+//	public BitcoinDto getBitcoinForRegistration(@RequestParam("personName") String p, @RequestParam("eventName") String e)
+//			throws IllegalArgumentException {
+//		// Both the person and the event are identified by their names
+//		Person person = service.getPerson(p);
+//		Event event = service.getEvent(e);
+//		Registration r = service.getRegistrationByPersonAndEvent(person, event);
+//		Bitcoin bitcoin = r.getBitcoin();
+//		return convertToDto(bitcoin);
+//	}
 
 	@GetMapping(value = { "/persons", "/persons/" })
 	public List<PersonDto> getAllPersons() {
@@ -318,6 +331,16 @@ public class EventRegistrationRestController {
 		for (Volunteer volunteer : allVolunteers) {
 			if (volunteer.getName().equals(vDto.getName())) {
 				return volunteer;
+			}
+		}
+		return null;
+	}
+	
+	private Event convertToDomainObject(EventDto eDto) {
+		List<Event> allEvents = service.getAllEvents();
+		for (Event event : allEvents) {
+			if (event.getName().equals(eDto.getName())) {
+				return event;
 			}
 		}
 		return null;

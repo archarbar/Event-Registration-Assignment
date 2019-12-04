@@ -17,13 +17,23 @@
             </li>
           </ul>
         </td>
+
         <td>
-          
-        </td>          
-        
-        
-        <!-- <td v-bind:id="`${bitcoin.userID.replace(/\s/g, '_')}-userID`">{{bitcoin.userID}}</td>
-        <td v-bind:id="`${bitcoin.amount}-amount`">{{bitcoin.amount}}</td> -->
+          <ul>
+            <li v-for="(event, i) in person.eventsAttended" v-bind:key="`event-${i}`" style="list-style-type: disc;">
+              <span class='registration-event-name'>{{event.userID}}</span>
+            </li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li v-for="(event, i) in person.eventsAttended" v-bind:key="`event-${i}`" style="list-style-type: disc;">
+              <span class='registration-event-name'>{{event.amount}}</span>
+            </li>
+          </ul>
+        </td>
+
+      </tr>
       <tr>
         <td>
           <input id="create-person-person-name" type="text" v-model="newPerson" placeholder="Person Name">
@@ -54,18 +64,19 @@
         <th>Movie</th>
       </tr>
       <tr v-for="(event, i) in events" v-bind:id="event.name" v-bind:key="`event-${i}`">
-        <td v-bind:id="`${event.name.replace(/\s/g, '_')}-name`">{{event.name}}</td>
-        <td v-bind:id="`${event.name.replace(/\s/g, '_')}-date`">{{event.date}}</td>
-        <td v-bind:id="`${event.name.replace(/\s/g, '_')}-starttime`">{{event.startTime}}</td>
-        <td v-bind:id="`${event.name.replace(/\s/g, '_')}-endtime`">{{event.endTime}}</td>
-        <td v-bind:id="`${event.name.replace(/\s/g, '_')}-movie`">{{event.movie}}</td>
+        <td v-bind:id="`${event.name.replace(/\s/g, '-')}-name`">{{event.name}}</td>
+        <td v-bind:id="`${event.name.replace(/\s/g, '-')}-date`">{{event.date}}</td>
+        <td v-bind:id="`${event.name.replace(/\s/g, '-')}-starttime`">{{event.startTime}}</td>
+        <td v-bind:id="`${event.name.replace(/\s/g, '-')}-endtime`">{{event.endTime}}</td>
+        <td v-bind:id="`${event.name.replace(/\s/g, '-')}-movie`">{{event.movie}}</td>
       </tr>
       <tr>
         <td>
           <input id="event-name-input" type="text" v-model="newEvent.name" placeholder="Event Name">
         </td>
         <td>
-          <input id="event-date-input" type="date" v-model="newEvent.date" placeholder="YYYY-MM-DD">
+          <input id="event-date-input" type="date" v-model="newEvent.date" max="9999-12-31" placeholder="YYYY-MM-DD">
+          <!-- Any date above max is invalid and will be set to a valid one -->
         </td>
         <td>
           <input id="event-starttime-input" type="time" v-model="newEvent.startTime" placeholder="HH:mm">
@@ -121,13 +132,13 @@
     <!-- PAY FOR REGISTRATION  -->
     <h2>Pay for Registration with Bitcoin</h2>
     <label>Person:
-      <select id='bitcoin-person-select' v-model="selectedPerson">
+      <select id='bitcoin-person-select' v-model="selectedPersonPay">
         <option disabled value="">Please select one</option>
         <option v-for="(person, i) in persons" v-bind:key="`person-${i}`">{{person.name}}</option>
       </select>
     </label>
     <label>Event:
-      <select id='bitcoin-event-select' v-model="selectedEvent">
+      <select id='bitcoin-event-select' v-model="selectedEventPay">
         <option disabled value="">Please select one</option>
         <option v-for="(event, i) in events" v-bind:key="`event-${i}`">{{event.name}}</option>
       </select>
@@ -137,10 +148,10 @@
         <input id="bitcoin-id-input" type="text" v-model="userID" placeholder="ex: AAAA-1111">
       </label>
       <label>Amount:
-        <input id="bitcoin-amount-input" type="test" v-model="amount" placeholder="ex: 2">
+        <input id="bitcoin-amount-input" type="text" v-model="amount" placeholder="ex: 2">
       </label>
     <br>
-    <button id='bitcoin-button' v-bind:disabled="!selectedPerson || !selectedEvent" @click="makePayment(selectedPerson, selectedEvent, userID, amount)">Make payment</button>
+    <button id='bitcoin-button' v-bind:disabled="!selectedPersonPay || !selectedEventPay" @click="makePayment(selectedPersonPay, selectedEventPay)">Make payment</button>
     <br/>
     <span id="bitcoin-error" v-if="errorBitcoin" style="color:red">Error: {{errorBitcoin}}</span>
     <hr>
