@@ -144,7 +144,6 @@ public class EventRegistrationService {
 	
 	@Transactional
 	public Cinema createCinema(String name, Date date, Time startTime , Time endTime, String movie) {
-		Cinema cinema = new Cinema();
 		String error = "";
 		if (name == null || name.trim().length() == 0) {
 			error = error + "Event name cannot be empty! ";
@@ -161,15 +160,16 @@ public class EventRegistrationService {
 			error = error + "Event end time cannot be empty! ";
 		}
 		if (endTime != null && startTime != null && endTime.before(startTime)) {
-			error = error + "Event end time cannot be before cinema start time!";
+			error = error + "Event end time cannot be before event start time!";
 		}
 		if (movie == null || movie.trim().length() == 0) {
-			throw new IllegalArgumentException("Cinema movie cannot be empty!");
+			error = error + "Cinema movie cannot be empty!";
 		}
 		error = error.trim();
 		if (error.length() > 0) {
 			throw new IllegalArgumentException(error);
 		}
+		Cinema cinema = new Cinema();
 		cinema.setName(name);
 		cinema.setDate(date);
 		cinema.setStartTime(startTime);
